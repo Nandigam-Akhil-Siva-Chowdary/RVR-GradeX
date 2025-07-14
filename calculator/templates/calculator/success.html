@@ -1,16 +1,148 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Success</title>
+  <style>
+    body {
+      background-color: #f0f4f8;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .id-card {
+      background: linear-gradient(135deg, #ffffff, #e0f7fa);
+      border: 2px solid #00acc1;
+      border-radius: 16px;
+      padding: 30px;
+      width: 400px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0, 172, 193, 0.2);
+      transition: transform 0.3s;
+    }
+
+    .id-card:hover {
+      transform: scale(1.02);
+    }
+
+    .id-card h2 {
+      color: #00796b;
+      margin-bottom: 20px;
+    }
+
+    .id-card p {
+      margin: 10px 0;
+      font-size: 16px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 8px;
+    }
+
+    .result-highlight {
+      background-color: #e8f5e8;
+      border: 2px solid #4caf50;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      font-weight: bold;
+      font-size: 18px;
+      color: #2e7d32;
+    }
+
+    .semester-info {
+      background-color: #f3e5f5;
+      border: 1px solid #9c27b0;
+      border-radius: 8px;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 14px;
+    }
+
+    .subject-grades {
+      background-color: #fff3e0;
+      border: 1px solid #ff9800;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      text-align: left;
+    }
+
+    .subject-grades h4 {
+      margin: 0 0 10px 0;
+      color: #e65100;
+      text-align: center;
+    }
+
+    .subject-grade-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px solid #ffcc80;
+    }
+
+    .subject-grade-item:last-child {
+      border-bottom: none;
+    }
+
+    .id-card a {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #00bcd4;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background-color 0.3s;
+    }
+
+    .id-card a:hover {
+      background-color: #4dd0e1;
+    }
+  </style>
 </head>
+
 <body>
-  <h2>Submission Successful!</h2>
-  <p>Name: {{ student.name }}</p>
-  <p>Register Number: {{ student.reg_number }}</p>
-  <p>Branch: {{ student.branch }}</p>
-  <p>SGPA: {{ student.sgpa }}</p>
-  <a href="/">Go back</a>
+  <div class="id-card">
+    <h2>Calculation Successful!</h2>
+    <p><strong>Name:</strong> {{ student.name }}</p>
+    <p><strong>Register Number:</strong> {{ student.reg_number }}</p>
+    <p><strong>Branch:</strong> {{ student.branch }}</p>
+
+    {% if student.calculation_type == 'sgpa' %}
+    <div class="result-highlight">
+      <strong>SGPA:</strong> {{ student.sgpa }}
+    </div>
+
+    {% if student.subject_grades.all %}
+    <div class="subject-grades">
+      <h4>Subject Grades</h4>
+      {% for subject_grade in student.subject_grades.all %}
+      <div class="subject-grade-item">
+        <span>{{ subject_grade.subject_name }} ({{ subject_grade.subject_credit }} credits)</span>
+        <span><strong>{{ subject_grade.grade }}</strong></span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="semester-info">
+      <p><strong>1st Semester GPA:</strong> {{ student.sem1_gpa }}</p>
+      <p><strong>2nd Semester GPA:</strong> {{ student.sem2_gpa }}</p>
+    </div>
+    <div class="result-highlight">
+      <strong>CGPA:</strong> {{ student.cgpa }}
+    </div>
+    {% endif %}
+
+    <a href="/">Calculate Again</a>
+  </div>
 </body>
+
 </html>

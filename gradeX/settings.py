@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import dj_database_url
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,7 +26,9 @@ SECRET_KEY = "django-insecure-(m1@vd5376d59aa^6umpp6)oq0lokah*6fm)d1*sx7m@i+nh4_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.232.245', 'localhost', '127.0.0.1']
+#ALLOWED_HOSTS = ["AkhilSivaChowdary.pythonanywhere.com"]
+
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost','*']
 
 
 
@@ -77,12 +79,12 @@ WSGI_APPLICATION = "gradeX.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default='postgres://postgres:1234@localhost:5432/gradeX',
-        conn_max_age=600,
-        ssl_require=not DEBUG
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
+
 
 
 # Password validation
@@ -121,6 +123,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "calculator" / "static"]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 

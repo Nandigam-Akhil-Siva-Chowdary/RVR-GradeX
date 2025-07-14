@@ -1,80 +1,273 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>RVR & JC SGPA Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RVR & JC Grade Calculator</title>
   <link rel="stylesheet" href="{% static 'calculator/style.css' %}">
   <style>
-    .hidden { display: none; }
-    label, select, input[type="text"] {
+    body {
+      background: #f0f4f8;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      margin: 0;
+      padding: 40px 10px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      background: linear-gradient(145deg, #ffffff, #e0f7fa);
+      border: 2px solid #00acc1;
+      border-radius: 16px;
+      padding: 30px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 8px 24px rgba(0, 172, 193, 0.2);
+    }
+
+    h2 {
+      text-align: center;
+      color: #00796b;
+      margin-bottom: 30px;
+    }
+
+    .choice-buttons {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .choice-btn {
+      flex: 1;
+      padding: 15px;
+      font-size: 1.1rem;
+      background-color: #00bcd4;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .choice-btn:hover {
+      background-color: #4dd0e1;
+      transform: translateY(-2px);
+    }
+
+    .choice-btn.active {
+      background-color: #00796b;
+      box-shadow: 0 4px 12px rgba(0, 121, 107, 0.3);
+    }
+
+    label,
+    select,
+    input[type="text"],
+    input[type="number"] {
       display: block;
       margin-top: 15px;
       width: 100%;
       padding: 10px;
       font-size: 1rem;
+      border: 1px solid #bbb;
+      border-radius: 8px;
+      background-color: #fff;
     }
+
     .subject-name {
       font-weight: bold;
-      margin-top: 10px;
+      margin-top: 15px;
     }
+
+    button {
+      margin-top: 25px;
+      padding: 12px;
+      width: 100%;
+      font-size: 1rem;
+      background-color: #00bcd4;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #4dd0e1;
+    }
+
     .footer {
       margin-top: 40px;
       padding: 20px;
       text-align: center;
-      background-color: #f0f0f0;
-      border-radius: 10px;
+      background-color: #e1f5fe;
+      border-radius: 12px;
       font-size: 0.95rem;
+      border: 1px solid #81d4fa;
     }
+
     .footer a {
       margin: 0 10px;
-      color: #0044ff;
+      color: #00796b;
       text-decoration: none;
     }
+
     .footer a:hover {
       text-decoration: underline;
     }
+
+    .hidden {
+      display: none;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      margin-bottom: 6px;
+      display: block;
+      font-weight: 500;
+    }
+
+    .form-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .form-row label {
+      flex: 0 0 150px;
+      /* fixed width for labels */
+      font-weight: 500;
+    }
+
+    .form-row input,
+    .form-row select {
+      flex: 1;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .cgpa-form-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .cgpa-form-row label {
+      flex: 0 0 120px;
+      font-weight: 500;
+    }
+
+    .cgpa-form-row input {
+      flex: 1;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
   </style>
 </head>
+
 <body>
   <div class="container">
-    <h2>RVR & JC SGPA Calculator</h2>
+    <h2>RVR & JC Grade Calculator</h2>
 
-    <!-- Step 1: Basic Info -->
-    <form id="basic-info-form">
-      {% csrf_token %}
-      <label for="name">Name:</label>
-      <input type="text" id="name" required>
+    <!-- Choice Buttons -->
+    <div class="choice-buttons">
+      <button class="choice-btn active" onclick="showSGPA()">Calculate SGPA</button>
+      <button class="choice-btn" onclick="showCGPA()">Calculate CGPA</button>
+    </div>
 
-      <label for="regno">Register Number:</label>
-      <input type="text" id="regno" required>
+    <!-- SGPA Form -->
+    <div id="sgpa-section">
+      <form id="basic-info-form">
+        {% csrf_token %}
 
-      <label for="branch">Select Branch:</label>
-      <select id="branch" required>
-        <option value="">-- Select Branch --</option>
-        <option value="cse">CSE/CSO/CSD/IT</option>
-        <option value="ece">ECE/EEE</option>
-        <option value="mec">MEC/CIV</option>
-      </select>
+        <div class="form-row">
+          <label for="name">Name:</label>
+          <input type="text" id="name" required>
+        </div>
 
-      <button type="submit">Next</button>
-    </form>
+        <div class="form-row">
+          <label for="regno">Register Number:</label>
+          <input type="text" id="regno" required>
+        </div>
 
-    <!-- Step 2: Grade Inputs -->
-    <form id="grade-form" class="hidden" method="POST">
-      {% csrf_token %}
-      <input type="hidden" name="name" id="name-hidden">
-      <input type="hidden" name="reg_number" id="regno-hidden">
-      <input type="hidden" name="branch" id="branch-hidden">
-      <div id="subjects-container"></div>
-      <input type="hidden" id="sgpa-hidden" name="sgpa">
-      <button type="submit">Calculate SGPA</button>
-    </form>
+        <div class="form-row">
+          <label for="branch">Select Branch:</label>
+          <select id="branch" required>
+            <option value="">-- Select Branch --</option>
+            <option value="cse">CSE/CSO/CSD/IT</option>
+            <option value="ece">ECE/EEE</option>
+            <option value="mec">MEC/CIV</option>
+          </select>
+        </div>
 
-    <!-- About Section -->
+        <button type="submit">Next</button>
+      </form>
+
+      <form id="grade-form" class="hidden" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="name" id="name-hidden">
+        <input type="hidden" name="reg_number" id="regno-hidden">
+        <input type="hidden" name="branch" id="branch-hidden">
+        <input type="hidden" name="calculation_type" value="sgpa">
+        <div id="subjects-container"></div>
+        <input type="hidden" id="sgpa-hidden" name="sgpa">
+        <button type="submit">Calculate SGPA</button>
+      </form>
+    </div>
+
+    <!-- CGPA Form -->
+    <div id="cgpa-section" class="hidden">
+      <form id="cgpa-form" method="POST">
+        {% csrf_token %}
+
+        <div class="form-row">
+          <label for="cgpa-name">Name:</label>
+          <input type="text" id="cgpa-name" name="name" required>
+        </div>
+
+        <div class="form-row">
+          <label for="cgpa-regno">Register Number:</label>
+          <input type="text" id="cgpa-regno" name="reg_number" required>
+        </div>
+
+        <div class="form-row">
+          <label for="cgpa-branch">Select Branch:</label>
+          <select id="cgpa-branch" name="branch" required>
+            <option value="">-- Select Branch --</option>
+            <option value="cse">CSE/CSO/CSD/IT</option>
+            <option value="ece">ECE/EEE</option>
+            <option value="mec">MEC/CIV</option>
+          </select>
+        </div>
+
+        <div class="cgpa-form-row">
+          <label for="sem1-gpa">1st Semester GPA:</label>
+          <input type="number" id="sem1-gpa" name="sem1_gpa" step="0.01" min="0" max="10" required>
+        </div>
+
+        <div class="cgpa-form-row">
+          <label for="sem2-gpa">2nd Semester GPA:</label>
+          <input type="number" id="sem2-gpa" name="sem2_gpa" step="0.01" min="0" max="10" required>
+        </div>
+
+        <input type="hidden" name="calculation_type" value="cgpa">
+        <input type="hidden" id="cgpa-hidden" name="cgpa">
+        <button type="submit">Calculate CGPA</button>
+      </form>
+    </div>
+
+    <!-- Footer -->
     <div class="footer">
-      <p>Developed with ❤️ by Akhil Siva Chowdary [Y24CO033]| RVR & JC College</p>
+      <p>Developed with ❤️ by Akhil Siva Chowdary [Y24CO033] | RVR & JC College</p>
       <p>Connect with me:</p>
       <a href="https://www.instagram.com/akhil_20.04/" target="_blank">Instagram</a> |
       <a href="https://www.linkedin.com/in/akhil-siva-chowdary-nandigam-897a99356" target="_blank">LinkedIn</a>
@@ -82,7 +275,7 @@
   </div>
 
   <script>
-    const gradeToPoint = {"A+": 10, "A": 9, "B": 8, "C": 7, "D": 6, "E": 5, "F": 0};
+    const gradeToPoint = { "A+": 10, "A": 9, "B": 8, "C": 7, "D": 6, "E": 5, "F": 0 };
     const subjects = {
       cse: [
         ["CO121 - Maths", 3], ["CO122 - Chemistry", 2], ["CO123 - English", 2],
@@ -99,13 +292,27 @@
       ],
       mec: [
         ["ME121 - Maths", 3], ["ME122 - Physics", 3], ["ME123 - BEEE", 3],
-        ["ME124 - BEEE", 3], ["ME125 - Engineering Graphics", 3],
+        ["ME124 - Mechanics", 3], ["ME125 - Engineering Drawing", 3],
         ["ME161 - Physics Lab", 1], ["ME162 - BEEE Lab", 1.5], ["ME163 - Python Lab", 1.5],
         ["ME164 - Engineering Workshop", 1.5], ["ME165 - NSS & NCC", 0.5]
       ]
     };
 
-    document.getElementById("basic-info-form").addEventListener("submit", function(e) {
+    function showSGPA() {
+      document.querySelectorAll('.choice-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('sgpa-section').classList.remove('hidden');
+      document.getElementById('cgpa-section').classList.add('hidden');
+    }
+
+    function showCGPA() {
+      document.querySelectorAll('.choice-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('sgpa-section').classList.add('hidden');
+      document.getElementById('cgpa-section').classList.remove('hidden');
+    }
+
+    document.getElementById("basic-info-form").addEventListener("submit", function (e) {
       e.preventDefault();
       const name = document.getElementById("name").value;
       const regno = document.getElementById("regno").value;
@@ -140,18 +347,44 @@
       document.getElementById("grade-form").classList.remove("hidden");
     });
 
-    document.getElementById("grade-form").addEventListener("submit", function(e) {
+    document.getElementById("grade-form").addEventListener("submit", function (e) {
       const selects = document.querySelectorAll(".grade-select");
       let totalCredits = 0, totalPoints = 0;
+
+      // Clear any existing hidden inputs
+      const existingInputs = document.querySelectorAll('input[name="subjects[]"], input[name="grades[]"], input[name="credits[]"]');
+      existingInputs.forEach(input => input.remove());
 
       for (let sel of selects) {
         const grade = sel.value;
         const credit = parseFloat(sel.dataset.credit);
+        const subjectName = sel.previousElementSibling.textContent.split(' (')[0]; // Extract subject name
+
         if (!grade) {
           alert("Please fill all grades");
           e.preventDefault();
           return;
         }
+
+        // Create hidden inputs for subject data
+        const subjectInput = document.createElement('input');
+        subjectInput.type = 'hidden';
+        subjectInput.name = 'subjects[]';
+        subjectInput.value = subjectName;
+        this.appendChild(subjectInput);
+
+        const gradeInput = document.createElement('input');
+        gradeInput.type = 'hidden';
+        gradeInput.name = 'grades[]';
+        gradeInput.value = grade;
+        this.appendChild(gradeInput);
+
+        const creditInput = document.createElement('input');
+        creditInput.type = 'hidden';
+        creditInput.name = 'credits[]';
+        creditInput.value = credit;
+        this.appendChild(creditInput);
+
         totalPoints += gradeToPoint[grade] * credit;
         totalCredits += credit;
       }
@@ -159,6 +392,21 @@
       const sgpa = (totalPoints / totalCredits).toFixed(2);
       document.getElementById("sgpa-hidden").value = sgpa;
     });
+
+    document.getElementById("cgpa-form").addEventListener("submit", function (e) {
+      const sem1Gpa = parseFloat(document.getElementById("sem1-gpa").value);
+      const sem2Gpa = parseFloat(document.getElementById("sem2-gpa").value);
+
+      if (sem1Gpa < 0 || sem1Gpa > 10 || sem2Gpa < 0 || sem2Gpa > 10) {
+        alert("GPA values must be between 0 and 10");
+        e.preventDefault();
+        return;
+      }
+
+      const cgpa = ((sem1Gpa + sem2Gpa) / 2).toFixed(2);
+      document.getElementById("cgpa-hidden").value = cgpa;
+    });
   </script>
 </body>
+
 </html>
